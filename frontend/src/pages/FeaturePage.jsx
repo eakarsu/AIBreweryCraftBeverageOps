@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FaArrowLeft, FaPlus, FaSearch } from 'react-icons/fa';
-import { getAll, create, update, remove } from '../services/api';
+import { FaArrowLeft, FaPlus, FaSearch, FaChevronLeft, FaChevronRight, FaFilePdf, FaExchangeAlt } from 'react-icons/fa';
+import { getAll, create, update, remove, updateBatchStatus, downloadBrewSheet } from '../services/api';
 import Modal from '../components/Modal';
 import DetailPanel from '../components/DetailPanel';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -267,6 +267,26 @@ const featureConfigs = {
       { name: 'notes', label: 'Notes', type: 'textarea' },
     ],
   },
+  'batches': {
+    title: 'Batch Manager',
+    columns: ['batch_number', 'recipe_name', 'style', 'status', 'brew_date'],
+    fields: [
+      { name: 'batch_number', label: 'Batch Number', type: 'text' },
+      { name: 'recipe_name', label: 'Recipe Name', type: 'text' },
+      { name: 'style', label: 'Style', type: 'select', options: ['IPA', 'Double IPA', 'Session IPA', 'West Coast IPA', 'New England IPA', 'Pale Ale', 'American Pale Ale', 'Stout', 'Imperial Stout', 'Oatmeal Stout', 'Porter', 'Lager', 'Pilsner', 'Wheat Beer', 'Hefeweizen', 'Witbier', 'Sour', 'Berliner Weisse', 'Gose', 'Saison', 'Belgian Strong', 'Dubbel', 'Tripel', 'Barleywine', 'Amber Ale', 'Brown Ale', 'Red Ale', 'Kolsch', 'Cream Ale', 'Other'] },
+      { name: 'abv', label: 'ABV (%)', type: 'number', step: '0.1' },
+      { name: 'og', label: 'Original Gravity', type: 'number', step: '0.001' },
+      { name: 'fg', label: 'Final Gravity', type: 'number', step: '0.001' },
+      { name: 'ibu', label: 'IBU', type: 'number' },
+      { name: 'batch_size_gallons', label: 'Batch Size (Gallons)', type: 'number' },
+      { name: 'brew_date', label: 'Brew Date', type: 'date' },
+      { name: 'brewer', label: 'Brewer', type: 'text' },
+      { name: 'yeast_strain', label: 'Yeast Strain', type: 'text' },
+      { name: 'fermentation_temp', label: 'Fermentation Temp (F)', type: 'number', step: '0.1' },
+      { name: 'status', label: 'Status', type: 'select', options: ['planned', 'mashing', 'boiling', 'fermenting', 'conditioning', 'packaging', 'sold'] },
+      { name: 'notes', label: 'Notes', type: 'textarea' },
+    ],
+  },
 };
 
 function FeaturePage() {
@@ -277,30 +297,49 @@ function FeaturePage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
+  const PAGE_SIZE = 20;
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [newStatus, setNewStatus] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
-    fetchData();
+    setPage(1);
   }, [featureName]);
 
-  const fetchData = async () => {
+  useEffect(() => {
+    fetchData();
+  }, [featureName, page]);
+
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getAll(featureName);
-      const items = Array.isArray(res.data) ? res.data : res.data?.data || [];
-      setData(items);
+      const res = await getAll(featureName, { page, limit: PAGE_SIZE });
+      const payload = res.data;
+      if (payload && payload.data && payload.pagination) {
+        setData(payload.data);
+        setPagination(payload.pagination);
+      } else if (Array.isArray(payload)) {
+        setData(payload);
+        setPagination(null);
+      } else {
+        setData(payload?.data || []);
+        setPagination(payload?.pagination || null);
+      }
     } catch (err) {
       toast.error('Failed to load data');
       setData([]);
+      setPagination(null);
     } finally {
       setLoading(false);
     }
-  };
+  }, [featureName, page]);
 
   const filteredData = useMemo(() => {
     if (!search.trim()) return data;
@@ -385,6 +424,36 @@ function FeaturePage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleDownloadBrewSheet = async (item) => {
+    try {
+      const res = await downloadBrewSheet(item.id);
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `brew-sheet-${item.id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Brew sheet downloaded');
+    } catch (err) {
+      toast.error('Failed to download brew sheet');
+    }
+  };
+
+  const handleStatusChange = async () => {
+    if (!newStatus || !selectedItem) return;
+    try {
+      await updateBatchStatus(selectedItem.id, newStatus);
+      toast.success(`Batch status updated to ${newStatus}`);
+      setShowStatusModal(false);
+      setShowDetailModal(false);
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to update status');
+    }
+  };
+
   const getStatusClass = (value) => {
     if (typeof value !== 'string') return '';
     const v = value.toLowerCase();
@@ -454,9 +523,21 @@ function FeaturePage() {
           </button>
           {config.title}
         </h1>
-        <button className="btn btn-primary" onClick={handleAdd}>
-          <FaPlus /> Add New
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          {featureName === 'batches' && selectedItem && (
+            <>
+              <button className="btn btn-secondary btn-sm" onClick={() => { setNewStatus(selectedItem.status || 'planned'); setShowStatusModal(true); }}>
+                <FaExchangeAlt /> Change Status
+              </button>
+              <button className="btn btn-secondary btn-sm" onClick={() => handleDownloadBrewSheet(selectedItem)}>
+                <FaFilePdf /> Brew Sheet
+              </button>
+            </>
+          )}
+          <button className="btn btn-primary" onClick={handleAdd}>
+            <FaPlus /> Add New
+          </button>
+        </div>
       </div>
 
       <div className="toolbar">
@@ -523,6 +604,29 @@ function FeaturePage() {
         </div>
       )}
 
+      {/* Pagination */}
+      {pagination && pagination.totalPages > 1 && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginTop: '1.5rem' }}>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page <= 1}
+          >
+            <FaChevronLeft /> Prev
+          </button>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            Page {pagination.page} of {pagination.totalPages} ({pagination.total} total)
+          </span>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+            disabled={page >= pagination.totalPages}
+          >
+            Next <FaChevronRight />
+          </button>
+        </div>
+      )}
+
       {/* Add Modal */}
       <Modal isOpen={showAddModal} onClose={() => setShowAddModal(false)} title={`Add ${config.title}`}>
         <form onSubmit={handleCreate}>
@@ -566,6 +670,24 @@ function FeaturePage() {
         onConfirm={handleDelete}
         onCancel={() => setShowConfirm(false)}
       />
+
+      {/* Batch Status Change Modal */}
+      {featureName === 'batches' && (
+        <Modal isOpen={showStatusModal} onClose={() => setShowStatusModal(false)} title="Change Batch Status">
+          <div className="form-group">
+            <label>New Status</label>
+            <select className="form-control" value={newStatus} onChange={e => setNewStatus(e.target.value)}>
+              {['planned', 'mashing', 'boiling', 'fermenting', 'conditioning', 'packaging', 'sold'].map(s => (
+                <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
+              ))}
+            </select>
+          </div>
+          <div className="modal-footer" style={{ padding: '1rem 0 0', borderTop: '1px solid var(--border-primary)' }}>
+            <button className="btn btn-secondary" onClick={() => setShowStatusModal(false)}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleStatusChange}>Update Status</button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

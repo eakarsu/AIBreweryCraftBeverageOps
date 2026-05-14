@@ -6,6 +6,10 @@ import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import FeaturePage from './pages/FeaturePage';
 import AIFeaturePage from './pages/AIFeaturePage';
+import AIHistoryPage from './pages/AIHistoryPage';
+import AlertsPage from './pages/AlertsPage';
+import WebhooksPage from './pages/WebhooksPage';
+import ExtensionsPage from './pages/ExtensionsPage';
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -38,6 +42,38 @@ function App() {
           element={
             <PrivateRoute>
               <AIFeaturePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/ai-history"
+          element={
+            <PrivateRoute>
+              <AIHistoryPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/alerts"
+          element={
+            <PrivateRoute>
+              <AlertsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/webhooks"
+          element={
+            <PrivateRoute>
+              <WebhooksPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/extensions"
+          element={
+            <PrivateRoute>
+              <ExtensionsPage />
             </PrivateRoute>
           }
         />

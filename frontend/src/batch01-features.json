@@ -1,0 +1,97 @@
+{
+  "project": "AIBreweryCraftBeverageOps",
+  "marker": "// === Batch 01 Gaps & Frontend Mounts ===",
+  "features": [
+    {
+      "slug": "agentic-brew-day-assistant-orchestrating-recipe-wa",
+      "component": "AgenticBrewDayAssistantOrchestratingRecipeWaPage",
+      "label": "Agentic brew-day assistant orchestrating recipe, water chem, yeast, and CIP scheduling",
+      "endpoint": "/api/cf-agentic-brew-day-assistant-orchestrating-recipe-wa",
+      "kind": "cfs"
+    },
+    {
+      "slug": "rag-over-bjcp-guidelines-in-house-brew-logs-and-co",
+      "component": "RagOverBjcpGuidelinesInHouseBrewLogsAndCoPage",
+      "label": "RAG over BJCP guidelines, in-house brew logs, and competition feedback",
+      "endpoint": "/api/cf-rag-over-bjcp-guidelines-in-house-brew-logs-and-co",
+      "kind": "cfs"
+    },
+    {
+      "slug": "real-time-fermentation-streaming-from-iot-sensors-",
+      "component": "RealTimeFermentationStreamingFromIotSensorsPage",
+      "label": "Real-time fermentation streaming from IoT sensors with anomaly alerts",
+      "endpoint": "/api/cf-real-time-fermentation-streaming-from-iot-sensors-",
+      "kind": "cfs"
+    },
+    {
+      "slug": "white-label-platform-for-contract-brewers-managing",
+      "component": "WhiteLabelPlatformForContractBrewersManagingPage",
+      "label": "White-label platform for contract brewers managing multi-client brewhouses",
+      "endpoint": "/api/cf-white-label-platform-for-contract-brewers-managing",
+      "kind": "cfs"
+    },
+    {
+      "slug": "no-vision-based-fermentation-clarity-monitoring",
+      "component": "NoVisionBasedFermentationClarityMonitoringPage",
+      "label": "No vision-based fermentation/clarity monitoring",
+      "endpoint": "/api/gap-no-vision-based-fermentation-clarity-monitoring",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-ai-customer-feedback-sentiment-loop-into-recipe",
+      "component": "NoAiCustomerFeedbackSentimentLoopIntoRecipePage",
+      "label": "No AI customer-feedback sentiment loop into recipes",
+      "endpoint": "/api/gap-no-ai-customer-feedback-sentiment-loop-into-recipe",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-ai-tap-room-demand-forecasting-per-hour",
+      "component": "NoAiTapRoomDemandForecastingPerHourPage",
+      "label": "No AI tap-room demand forecasting per hour",
+      "endpoint": "/api/gap-no-ai-tap-room-demand-forecasting-per-hour",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-ai-tasting-note-generator-for-marketing",
+      "component": "NoAiTastingNoteGeneratorForMarketingPage",
+      "label": "No AI tasting-note generator for marketing",
+      "endpoint": "/api/gap-no-ai-tasting-note-generator-for-marketing",
+      "kind": "gap"
+    },
+    {
+      "slug": "only-8-frontend-pages-despite-21-backend-routes-ui",
+      "component": "Only8FrontendPagesDespite21BackendRoutesUiPage",
+      "label": "Only 8 frontend pages despite 21 backend routes \u2014 UI gap",
+      "endpoint": "/api/gap-only-8-frontend-pages-despite-21-backend-routes-ui",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-notification-system-alerts-module-is-storage-on",
+      "component": "NoNotificationSystemAlertsModuleIsStorageOnPage",
+      "label": "No notification system (alerts module is storage-only, no SMS/email delivery)",
+      "endpoint": "/api/gap-no-notification-system-alerts-module-is-storage-on",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-export-reporting-module-for-ttb-state-complianc",
+      "component": "NoExportReportingModuleForTtbStateCompliancPage",
+      "label": "No export/reporting module for TTB/state compliance",
+      "endpoint": "/api/gap-no-export-reporting-module-for-ttb-state-complianc",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-direct-pos-vendor-api-client-beyond-stored-tran",
+      "component": "NoDirectPosVendorApiClientBeyondStoredTranPage",
+      "label": "No direct POS-vendor API client beyond stored transactions",
+      "endpoint": "/api/gap-no-direct-pos-vendor-api-client-beyond-stored-tran",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-iot-sensor-stream-ingestion-layer-for-fermenter",
+      "component": "NoIotSensorStreamIngestionLayerForFermenterPage",
+      "label": "No IoT sensor stream ingestion layer for fermenters",
+      "endpoint": "/api/gap-no-iot-sensor-stream-ingestion-layer-for-fermenter",
+      "kind": "gap"
+    }
+  ]
+}

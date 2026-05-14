@@ -5,9 +5,11 @@ import {
   FaBeer, FaBoxes, FaWineBottle, FaCashRegister, FaTruck, FaFlask,
   FaWrench, FaCalendarAlt, FaCrown, FaChartLine, FaShower, FaHandshake,
   FaRobot, FaBrain, FaUtensils, FaChartBar, FaSearchPlus, FaTag, FaBullhorn,
+  FaTachometerAlt, FaSeedling, FaLeaf, FaTrophy, FaDollarSign, FaCalendarCheck, FaSmog,
+  FaWater, FaLayerGroup, FaExclamationTriangle, FaHistory,
 } from 'react-icons/fa';
 import { GiBarrel, GiWheat, GiThermometerScale } from 'react-icons/gi';
-import { getAll } from '../services/api';
+import { getAll, fetchAlerts } from '../services/api';
 
 const operationsCards = [
   { name: 'Brew Log', desc: 'Recipe & batch tracking', icon: FaBeer, route: 'brew-logs' },
@@ -25,6 +27,7 @@ const operationsCards = [
   { name: 'Financial Records', desc: 'Revenue & expenses', icon: FaChartLine, route: 'financial-records' },
   { name: 'CIP Schedules', desc: 'Clean-in-place', icon: FaShower, route: 'cip-schedules' },
   { name: 'Vendors', desc: 'Supplier management', icon: FaHandshake, route: 'vendors' },
+  { name: 'Batch Manager', desc: 'Production state machine & brew sheets', icon: FaLayerGroup, route: 'batches' },
 ];
 
 const aiCards = [
@@ -35,35 +38,52 @@ const aiCards = [
   { name: 'Quality Analysis AI', desc: 'Root cause analysis', icon: FaSearchPlus, route: 'quality-analysis' },
   { name: 'Label Copy AI', desc: 'Generate label copy text', icon: FaTag, route: 'label-copy' },
   { name: 'Event Content AI', desc: 'Marketing content generation', icon: FaBullhorn, route: 'event-content' },
+  // 8 new AI tools added per audit
+  { name: 'Brew Day Assistant', desc: 'Real-time guidance during brew session', icon: FaTachometerAlt, route: 'brew-day-assist' },
+  { name: 'Yeast Optimizer', desc: 'Predict fermentation outcome & pitch rate', icon: FaSeedling, route: 'yeast-optimizer' },
+  { name: 'Hop Freshness', desc: 'Alpha-acid degradation & dose adjustment', icon: FaLeaf, route: 'hop-freshness' },
+  { name: 'Water Chemistry', desc: 'Salt additions for target style profile', icon: FaWater, route: 'water-chemistry' },
+  { name: 'Competition Score', desc: 'Estimate BJCP score & feedback', icon: FaTrophy, route: 'competition-score' },
+  { name: 'Cost Optimizer', desc: 'Substitutions to reduce per-BBL cost', icon: FaDollarSign, route: 'cost-optimizer' },
+  { name: 'Seasonal Menu Planner', desc: '12-month rotation by climate/region', icon: FaCalendarCheck, route: 'seasonal-menu-planner' },
+  { name: 'Carbon Footprint', desc: 'Estimate & reduce brewery emissions', icon: FaSmog, route: 'carbon-footprint' },
+  { name: 'AI History', desc: 'Browse past AI results', icon: FaHistory, route: 'ai-history', isSpecial: true },
 ];
 
 function Dashboard() {
   const navigate = useNavigate();
   const [counts, setCounts] = useState({});
+  const [alerts, setAlerts] = useState({ total: 0, critical: 0, warning: 0 });
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
     const fetchCounts = async () => {
       const features = operationsCards.map((c) => c.route);
       const results = await Promise.allSettled(
-        features.map((f) => getAll(f))
+        features.map((f) => getAll(f, { page: 1, limit: 1 }))
       );
       const newCounts = {};
       results.forEach((result, i) => {
         if (result.status === 'fulfilled') {
-          const data = result.value.data;
-          newCounts[features[i]] = Array.isArray(data)
-            ? data.length
-            : data?.data
-            ? data.data.length
-            : 0;
+          const payload = result.value.data;
+          newCounts[features[i]] = payload?.pagination?.total
+            ?? (Array.isArray(payload) ? payload.length : payload?.data?.length ?? 0);
         } else {
           newCounts[features[i]] = 0;
         }
       });
       setCounts(newCounts);
     };
+
+    const loadAlerts = async () => {
+      try {
+        const res = await fetchAlerts();
+        setAlerts(res.data?.summary || { total: 0, critical: 0, warning: 0 });
+      } catch (_) {}
+    };
+
     fetchCounts();
+    loadAlerts();
   }, []);
 
   const handleLogout = () => {
@@ -122,8 +142,24 @@ function Dashboard() {
         <div className="stat-item">
           <span className="stat-icon">&#129302;</span>
           <div className="stat-info">
-            <div className="stat-value">7</div>
+            <div className="stat-value">{aiCards.length}</div>
             <div className="stat-label">AI Tools</div>
+          </div>
+        </div>
+        <div className="stat-item" style={{ cursor: 'pointer' }} onClick={() => navigate('/webhooks')}>
+          <span className="stat-icon">&#128276;</span>
+          <div className="stat-info">
+            <div className="stat-value">&rarr;</div>
+            <div className="stat-label">Webhooks</div>
+          </div>
+        </div>
+        <div className="stat-item" style={{ cursor: 'pointer' }} onClick={() => navigate('/alerts')}>
+          <span className="stat-icon">&#9888;</span>
+          <div className="stat-info">
+            <div className="stat-value" style={{ color: alerts.critical > 0 ? 'var(--danger)' : 'var(--warning)' }}>
+              {alerts.critical > 0 ? alerts.critical : alerts.total}
+            </div>
+            <div className="stat-label">{alerts.critical > 0 ? 'Critical Alerts' : 'Alerts'}</div>
           </div>
         </div>
       </div>
@@ -172,7 +208,7 @@ function Dashboard() {
                 <div
                   key={card.route}
                   className="card feature-card"
-                  onClick={() => navigate(`/ai/${card.route}`)}
+                  onClick={() => card.isSpecial ? navigate(`/${card.route}`) : navigate(`/ai/${card.route}`)}
                 >
                   <div className="card-icon">
                     <Icon />

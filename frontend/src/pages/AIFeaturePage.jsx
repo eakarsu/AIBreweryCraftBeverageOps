@@ -10,6 +10,14 @@ import {
   generateQualityAnalysis,
   generateLabelCopy,
   generateEventContent,
+  generateBrewDayAssist,
+  generateYeastOptimizer,
+  generateHopFreshness,
+  generateWaterChemistry,
+  generateCompetitionScore,
+  generateCostOptimizer,
+  generateSeasonalMenuPlanner,
+  generateCarbonFootprint,
 } from '../services/api';
 
 const aiConfigs = {
@@ -105,6 +113,109 @@ const aiConfigs = {
       { name: 'details', label: 'Event Details', type: 'textarea', placeholder: 'Describe the event details, special features, participating vendors...' },
     ],
   },
+  // === 8 NEW AI TOOLS (per audit) ===
+  'brew-day-assist': {
+    title: 'Brew Day Assistant AI',
+    description: 'Real-time guidance during brew session; alerts on temp/timing deviations.',
+    apiCall: generateBrewDayAssist,
+    fields: [
+      { name: 'batch_id', label: 'Batch ID', type: 'text' },
+      { name: 'current_step', label: 'Current Step', type: 'text', placeholder: 'mashing, sparging, boil, whirlpool, fermentation' },
+      { name: 'target_temp', label: 'Target Temp (F)', type: 'number' },
+      { name: 'actual_temp', label: 'Actual Temp (F)', type: 'number' },
+      { name: 'target_time', label: 'Target Time (min)', type: 'number' },
+      { name: 'actual_time', label: 'Actual Time (min)', type: 'number' },
+      { name: 'notes', label: 'Notes', type: 'textarea' },
+    ],
+  },
+  'yeast-optimizer': {
+    title: 'Yeast Performance Optimizer',
+    description: 'Predict fermentation outcome and recommend pitch rate.',
+    apiCall: generateYeastOptimizer,
+    fields: [
+      { name: 'yeast_strain', label: 'Yeast Strain', type: 'text', placeholder: 'e.g. WLP001, Wyeast 1056' },
+      { name: 'og', label: 'Original Gravity', type: 'number', step: '0.001' },
+      { name: 'fermentation_temp', label: 'Fermentation Temp (F)', type: 'number' },
+      { name: 'batch_size_bbl', label: 'Batch Size (BBL)', type: 'number', step: '0.5' },
+      { name: 'target_abv', label: 'Target ABV (%)', type: 'number', step: '0.1' },
+      { name: 'beer_style', label: 'Beer Style', type: 'text' },
+    ],
+  },
+  'hop-freshness': {
+    title: 'Hop Freshness Calculator',
+    description: 'Calculate alpha-acid degradation and dose adjustments.',
+    apiCall: generateHopFreshness,
+    fields: [
+      { name: 'hop_variety', label: 'Hop Variety', type: 'text' },
+      { name: 'harvest_date', label: 'Harvest Date', type: 'date' },
+      { name: 'storage_condition', label: 'Storage Condition', type: 'text', placeholder: 'cold/sealed, room temp, etc.' },
+      { name: 'original_alpha_acid_pct', label: 'Original AA%', type: 'number', step: '0.1' },
+      { name: 'recipe_target_ibu', label: 'Recipe Target IBU', type: 'number' },
+    ],
+  },
+  'water-chemistry': {
+    title: 'Water Chemistry Customizer',
+    description: 'Salt additions to match target water profile per style.',
+    apiCall: generateWaterChemistry,
+    fields: [
+      { name: 'source_water_profile', label: 'Source Water Profile (mg/L)', type: 'textarea', placeholder: 'Ca: 50, Mg: 5, Na: 10, Cl: 20, SO4: 30, HCO3: 80' },
+      { name: 'target_style', label: 'Target Style', type: 'text', placeholder: 'e.g. West Coast IPA, Czech Pilsner' },
+      { name: 'batch_size_bbl', label: 'Batch Size (BBL)', type: 'number', step: '0.5' },
+    ],
+  },
+  'competition-score': {
+    title: 'Competition Score Predictor',
+    description: 'Estimate BJCP competition score and category feedback.',
+    apiCall: generateCompetitionScore,
+    fields: [
+      { name: 'beer_name', label: 'Beer Name', type: 'text' },
+      { name: 'style', label: 'Style', type: 'text', placeholder: 'BJCP style code or name' },
+      { name: 'og', label: 'OG', type: 'number', step: '0.001' },
+      { name: 'fg', label: 'FG', type: 'number', step: '0.001' },
+      { name: 'abv', label: 'ABV (%)', type: 'number', step: '0.1' },
+      { name: 'ibu', label: 'IBU', type: 'number' },
+      { name: 'srm', label: 'SRM', type: 'number' },
+      { name: 'aroma_notes', label: 'Aroma Notes', type: 'textarea' },
+      { name: 'flavor_notes', label: 'Flavor Notes', type: 'textarea' },
+      { name: 'mouthfeel', label: 'Mouthfeel', type: 'textarea' },
+    ],
+  },
+  'cost-optimizer': {
+    title: 'Ingredient Cost Optimizer',
+    description: 'Find substitutions that maintain flavor and reduce cost.',
+    apiCall: generateCostOptimizer,
+    fields: [
+      { name: 'style', label: 'Beer Style', type: 'text' },
+      { name: 'recipe_grain_bill', label: 'Grain Bill', type: 'textarea', placeholder: '2-row 80%, Crystal 60L 8%, etc.' },
+      { name: 'recipe_hop_schedule', label: 'Hop Schedule', type: 'textarea', placeholder: 'Citra 60min 1oz, Mosaic 5min 2oz, etc.' },
+      { name: 'current_cost_per_bbl', label: 'Current Cost / BBL ($)', type: 'number', step: '0.01' },
+      { name: 'target_savings_pct', label: 'Target Savings (%)', type: 'number', step: '1' },
+    ],
+  },
+  'seasonal-menu-planner': {
+    title: 'Seasonal Menu Planner',
+    description: '12-month seasonal rotation tailored to climate, region, and capacity.',
+    apiCall: generateSeasonalMenuPlanner,
+    fields: [
+      { name: 'climate', label: 'Climate', type: 'text', placeholder: 'temperate, tropical, cold, etc.' },
+      { name: 'region', label: 'Region', type: 'text', placeholder: 'Pacific NW, Northeast, etc.' },
+      { name: 'taproom_capacity_bbl_per_month', label: 'Capacity (BBL/month)', type: 'number' },
+      { name: 'current_lineup', label: 'Current Lineup', type: 'textarea' },
+      { name: 'local_events', label: 'Local Events', type: 'textarea' },
+    ],
+  },
+  'carbon-footprint': {
+    title: 'Carbon Footprint Tracker',
+    description: 'Estimate brewery carbon footprint and recommend reductions.',
+    apiCall: generateCarbonFootprint,
+    fields: [
+      { name: 'annual_production_bbl', label: 'Annual Production (BBL)', type: 'number' },
+      { name: 'energy_source', label: 'Energy Source', type: 'text', placeholder: 'grid, solar, mix' },
+      { name: 'packaging_mix', label: 'Packaging Mix', type: 'text', placeholder: '60% can, 30% keg, 10% bottle' },
+      { name: 'transportation_radius_miles', label: 'Distribution Radius (miles)', type: 'number' },
+      { name: 'water_usage_gal_per_bbl', label: 'Water Usage (gal/BBL)', type: 'number' },
+    ],
+  },
 };
 
 function formatAIResponse(text) {
@@ -189,6 +300,7 @@ function AIFeaturePage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [rawResult, setRawResult] = useState('');
+  const [structuredResult, setStructuredResult] = useState(null);
 
   if (!config) {
     return (
@@ -209,23 +321,33 @@ function AIFeaturePage() {
     e.preventDefault();
     setLoading(true);
     setResult(null);
+    setStructuredResult(null);
     try {
       const res = await config.apiCall(formData);
       const data = res.data;
-      // Try to extract the AI response from various response shapes
+
+      // Check for structured (parsed) JSON output first
+      const innerData = data?.data;
+      if (innerData?.parsed && typeof innerData.parsed === 'object' && !innerData.parsed.content && !innerData.parsed.raw) {
+        setStructuredResult(innerData.parsed);
+      } else if (data?.data?.result && typeof data.data.result === 'object' && !data.data.result.raw) {
+        setStructuredResult(data.data.result);
+      }
+
+      // Extract display text
       let aiText = '';
       if (typeof data === 'string') {
         aiText = data;
+      } else if (innerData?.content && typeof innerData.content === 'string') {
+        aiText = innerData.content;
+      } else if (innerData?.result) {
+        aiText = typeof innerData.result === 'string' ? innerData.result : formatObjectToText(innerData.result);
       } else if (data?.result) {
         aiText = typeof data.result === 'string' ? data.result : formatObjectToText(data.result);
       } else if (data?.data) {
         aiText = typeof data.data === 'string' ? data.data : formatObjectToText(data.data);
-      } else if (data?.response) {
-        aiText = typeof data.response === 'string' ? data.response : formatObjectToText(data.response);
       } else if (data?.content) {
         aiText = typeof data.content === 'string' ? data.content : formatObjectToText(data.content);
-      } else if (data?.message) {
-        aiText = typeof data.message === 'string' ? data.message : formatObjectToText(data.message);
       } else {
         aiText = formatObjectToText(data);
       }
@@ -233,7 +355,7 @@ function AIFeaturePage() {
       setResult(formatAIResponse(aiText));
       toast.success('AI response generated!');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to generate AI response');
+      toast.error(err.response?.data?.error || err.response?.data?.message || 'Failed to generate AI response');
     } finally {
       setLoading(false);
     }
@@ -335,6 +457,19 @@ function AIFeaturePage() {
                 <div className="ai-badge">
                   <span>AI Generated</span>
                 </div>
+
+                {/* Structured JSON output panel */}
+                {structuredResult && (
+                  <details style={{ marginBottom: '1rem', background: 'var(--bg-secondary)', borderRadius: '8px', padding: '0.75rem' }}>
+                    <summary style={{ cursor: 'pointer', fontWeight: '600', color: 'var(--accent-gold)', fontSize: '0.875rem' }}>
+                      Structured Data (JSON)
+                    </summary>
+                    <pre style={{ marginTop: '0.75rem', fontSize: '0.78rem', overflow: 'auto', maxHeight: '400px', whiteSpace: 'pre-wrap', color: 'var(--text-secondary)' }}>
+                      {JSON.stringify(structuredResult, null, 2)}
+                    </pre>
+                  </details>
+                )}
+
                 <div
                   className="ai-output-content"
                   dangerouslySetInnerHTML={{ __html: result }}
