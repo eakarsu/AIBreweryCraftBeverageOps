@@ -127,4 +127,12 @@ export const fetchTenants = () => api.get('/ext/tenants');
 export const upsertTenant = (data) => api.post('/ext/tenants', data);
 export const fetchTenantBySlug = (slug) => api.get(`/ext/tenants/${slug}`);
 
+// Custom Views (synthesized brewery views)
+export const fetchFermentationTimeline = (params) => api.get('/custom-views/fermentation-timeline', { params });
+export const fetchTankStatusBoard = () => api.get('/custom-views/tank-status-board');
+export const fetchRecipeList = () => api.get('/custom-views/recipes');
+export const fetchRecipe = (id) => api.get(`/custom-views/recipe/${id}`);
+export const saveRecipe = (id, data) => api.put(`/custom-views/recipe/${id}`, data);
+export const batchRecordPdfUrl = (id) => `/api/custom-views/batch-record/${id}`;
+
 export default api;

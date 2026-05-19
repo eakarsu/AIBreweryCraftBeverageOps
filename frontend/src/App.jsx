@@ -10,6 +10,7 @@ import AIHistoryPage from './pages/AIHistoryPage';
 import AlertsPage from './pages/AlertsPage';
 import WebhooksPage from './pages/WebhooksPage';
 import ExtensionsPage from './pages/ExtensionsPage';
+import CustomViewsPage from './pages/CustomViewsPage';
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -74,6 +75,14 @@ function App() {
           element={
             <PrivateRoute>
               <ExtensionsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/custom-views"
+          element={
+            <PrivateRoute>
+              <CustomViewsPage />
             </PrivateRoute>
           }
         />

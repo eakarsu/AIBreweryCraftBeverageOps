@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3001;
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
 // CORS from env (comma-separated origins)
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:5173')
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:4200,http://localhost:5173')
   .split(',').map(s => s.trim()).filter(Boolean);
 app.use(cors({
   origin: function (origin, cb) {
@@ -34,10 +34,12 @@ app.use(express.json({ limit: '10mb' }));
 app.use(morgan('dev'));
 
 // AI rate limiter: 20 requests per user per hour
+// Use the library default ipKeyGenerator helper to safely normalize IPv6 keys when no user.
+const { ipKeyGenerator } = require('express-rate-limit');
 const aiRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
-  keyGenerator: (req) => req.user ? String(req.user.id) : req.ip,
+  keyGenerator: (req, res) => req.user ? String(req.user.id) : ipKeyGenerator(req.ip),
   message: { error: 'Too many AI requests. Limit is 20 per hour.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -91,6 +93,8 @@ app.use('/api/alerts', auth, require('./routes/alerts'));
 app.use('/api/webhooks', auth, require('./routes/webhooks'));
 // Apply pass 5 extensions (notifications, reports, webhook delivery, agents, RAG, white-label)
 app.use('/api/ext', auth, require('./routes/extensions'));
+// Custom Brewery Views (4 synthesized endpoints)
+app.use('/api/custom-views', auth, require('./routes/customViews'));
 
 // Health check
 app.get('/api/health', (req, res) => {
