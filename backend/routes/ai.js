@@ -554,4 +554,30 @@ router.get('/results', async (req, res) => {
   }
 });
 
+router.post('/fermentation-deviation-plan', async (req, res) => {
+  try {
+    const targetTemp = Number(req.body?.target_temp_f || 68);
+    const actualTemp = Number(req.body?.actual_temp_f || targetTemp);
+    const targetGravity = Number(req.body?.target_gravity || 1.018);
+    const actualGravity = Number(req.body?.actual_gravity || targetGravity);
+    const tempDelta = actualTemp - targetTemp;
+    const gravityDelta = Math.max(0, actualGravity - targetGravity) * 1000;
+    const score = Math.min(100, Math.round(Math.abs(tempDelta) * 9 + gravityDelta * 2));
+    res.json({
+      batch_id: req.body?.batch_id || 'batch',
+      risk_score: score,
+      risk_band: score >= 70 ? 'high' : score >= 35 ? 'medium' : 'low',
+      root_causes: [
+        tempDelta > 3 ? 'Fermentation temperature is above yeast target range.' : 'Temperature deviation is within normal correction window.',
+        gravityDelta > 6 ? 'Gravity is lagging behind expected attenuation.' : 'Gravity is close to target trajectory.',
+      ],
+      actions: [
+        tempDelta > 3 ? 'Step cooling down 2 F every 4 hours until target range.' : 'Hold current tank temperature.',
+        gravityDelta > 6 ? 'Check yeast viability, rouse gently, and verify dissolved oxygen history.' : 'Continue standard gravity checks.',
+      ],
+      generated_at: new Date().toISOString(),
+    });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 module.exports = router;

@@ -32,7 +32,7 @@ echo "  ╚═══════════════════════
 echo -e "${NC}"
 
 # ---- Step 1: Clean up used ports ----
-echo -e "${CYAN}[1/6] Cleaning up ports 3000 and 3001...${NC}"
+echo -e "${CYAN}[1/6] Cleaning up ports 4200 and 4201...${NC}"
 
 cleanup_port() {
     local port=$1
@@ -46,8 +46,8 @@ cleanup_port() {
     fi
 }
 
-cleanup_port 3000
-cleanup_port 3001
+cleanup_port 4200
+cleanup_port 4201
 
 # ---- Step 2: Load environment variables ----
 echo -e "${CYAN}[2/6] Loading environment variables...${NC}"
@@ -119,7 +119,7 @@ echo -e "${CYAN}[6/6] Starting application with hot reload...${NC}"
 
 # Start backend with file watching (using node --watch)
 cd "$BACKEND_DIR"
-echo -e "  ${BLUE}Starting backend on port 3001 (with auto-reload)...${NC}"
+echo -e "  ${BLUE}Starting backend on port 4201 (with auto-reload)...${NC}"
 NODE_ENV=development node --watch server.js &
 BACKEND_PID=$!
 
@@ -128,7 +128,7 @@ sleep 2
 
 # Start frontend with Vite (has built-in HMR)
 cd "$FRONTEND_DIR"
-echo -e "  ${BLUE}Starting frontend on port 3000 (with HMR)...${NC}"
+echo -e "  ${BLUE}Starting frontend on port 4200 (with HMR)...${NC}"
 npx vite --host &
 FRONTEND_PID=$!
 
@@ -138,8 +138,8 @@ cleanup() {
     kill $BACKEND_PID 2>/dev/null || true
     kill $FRONTEND_PID 2>/dev/null || true
     # Clean up any remaining processes on our ports
-    cleanup_port 3000
-    cleanup_port 3001
+    cleanup_port 4200
+    cleanup_port 4201
     echo -e "${GREEN}Goodbye! 🍻${NC}"
     exit 0
 }
@@ -149,8 +149,8 @@ trap cleanup SIGINT SIGTERM EXIT
 echo ""
 echo -e "${GREEN}${BOLD}  ✅ BrewOps AI is running!${NC}"
 echo ""
-echo -e "  ${CYAN}Frontend:${NC}  http://localhost:3000"
-echo -e "  ${CYAN}Backend:${NC}   http://localhost:3001"
+echo -e "  ${CYAN}Frontend:${NC}  http://localhost:4200"
+echo -e "  ${CYAN}Backend:${NC}   http://localhost:4201"
 echo ""
 echo -e "  ${AMBER}Login:${NC}     admin@brewery.com / brewery123"
 echo ""

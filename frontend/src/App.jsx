@@ -11,6 +11,10 @@ import AlertsPage from './pages/AlertsPage';
 import WebhooksPage from './pages/WebhooksPage';
 import ExtensionsPage from './pages/ExtensionsPage';
 import CustomViewsPage from './pages/CustomViewsPage';
+import FermentationDeviationPlanner from './pages/FermentationDeviationPlanner';
+
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -21,6 +25,9 @@ function App() {
   return (
     <>
       <Routes>
+        <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
+        <Route path="/codex/operations" element={<CodexOperationsFeature />} />
+
         <Route path="/" element={<LoginPage />} />
         <Route
           path="/dashboard"
@@ -75,6 +82,14 @@ function App() {
           element={
             <PrivateRoute>
               <ExtensionsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/ai/fermentation-deviation"
+          element={
+            <PrivateRoute>
+              <FermentationDeviationPlanner />
             </PrivateRoute>
           }
         />

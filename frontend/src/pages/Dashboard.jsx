@@ -47,6 +47,7 @@ const aiCards = [
   { name: 'Cost Optimizer', desc: 'Substitutions to reduce per-BBL cost', icon: FaDollarSign, route: 'cost-optimizer' },
   { name: 'Seasonal Menu Planner', desc: '12-month rotation by climate/region', icon: FaCalendarCheck, route: 'seasonal-menu-planner' },
   { name: 'Carbon Footprint', desc: 'Estimate & reduce brewery emissions', icon: FaSmog, route: 'carbon-footprint' },
+  { name: 'Fermentation Deviation', desc: 'Recover tanks drifting from temp or gravity targets', icon: GiThermometerScale, route: 'fermentation-deviation', isDirect: true },
   { name: 'AI History', desc: 'Browse past AI results', icon: FaHistory, route: 'ai-history', isSpecial: true },
 ];
 
@@ -153,6 +154,18 @@ function Dashboard() {
             <div className="stat-label">Webhooks</div>
           </div>
         </div>
+        <div
+          className="stat-item"
+          data-testid="sidebar-brewery-views"
+          style={{ cursor: 'pointer', borderLeft: '3px solid var(--accent-gold, #b8860b)' }}
+          onClick={() => navigate('/custom-views')}
+        >
+          <span className="stat-icon">&#127866;</span>
+          <div className="stat-info">
+            <div className="stat-value">&rarr;</div>
+            <div className="stat-label">Brewery Views</div>
+          </div>
+        </div>
         <div className="stat-item" style={{ cursor: 'pointer' }} onClick={() => navigate('/alerts')}>
           <span className="stat-icon">&#9888;</span>
           <div className="stat-info">
@@ -208,7 +221,7 @@ function Dashboard() {
                 <div
                   key={card.route}
                   className="card feature-card"
-                  onClick={() => card.isSpecial ? navigate(`/${card.route}`) : navigate(`/ai/${card.route}`)}
+                  onClick={() => card.isDirect ? navigate(`/ai/${card.route}`) : card.isSpecial ? navigate(`/${card.route}`) : navigate(`/ai/${card.route}`)}
                 >
                   <div className="card-icon">
                     <Icon />

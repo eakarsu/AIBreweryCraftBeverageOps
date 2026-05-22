@@ -80,6 +80,7 @@ export const generateCompetitionScore = (data) => api.post('/ai/competition-scor
 export const generateCostOptimizer = (data) => api.post('/ai/cost-optimizer', data);
 export const generateSeasonalMenuPlanner = (data) => api.post('/ai/seasonal-menu-planner', data);
 export const generateCarbonFootprint = (data) => api.post('/ai/carbon-footprint', data);
+export const generateFermentationDeviationPlan = (data) => api.post('/ai/fermentation-deviation-plan', data);
 
 export const fetchAIResults = (params) => api.get('/ai/results', { params });
 
