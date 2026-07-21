@@ -44,11 +44,13 @@ router.post(
       }
       const hashed = await bcrypt.hash(password, 12);
       const result = await pool.query(
-        'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name, role',
+        "INSERT INTO users (email, password, name, role, tenant_id) VALUES ($1, $2, $3, 'operator', 'pending') RETURNING id, email, name, role, tenant_id",
         [email, hashed, name || null]
       );
       const user = result.rows[0];
-      const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, getJwtSecret(), { expiresIn: '24h' });
+      user.tenant_id = `user:${user.id}`;
+      await pool.query('UPDATE users SET tenant_id=$1 WHERE id=$2', [user.tenant_id, user.id]);
+      const token = jwt.sign({ id: user.id, email: user.email, name: user.name, role: user.role, tenantId: user.tenant_id }, getJwtSecret(), { expiresIn: '24h' });
       res.status(201).json({ success: true, token, user });
     } catch (err) {
       console.error('Register error:', err);
@@ -83,7 +85,7 @@ router.post(
       }
 
       const token = jwt.sign(
-        { id: user.id, email: user.email, name: user.name },
+        { id: user.id, email: user.email, name: user.name, role: user.role, tenantId: user.tenant_id },
         getJwtSecret(),
         { expiresIn: '24h' }
       );
@@ -91,7 +93,7 @@ router.post(
       res.json({
         success: true,
         token,
-        user: { id: user.id, email: user.email, name: user.name, role: user.role },
+        user: { id: user.id, email: user.email, name: user.name, role: user.role, tenantId: user.tenant_id },
       });
     } catch (err) {
       console.error('Login error:', err);

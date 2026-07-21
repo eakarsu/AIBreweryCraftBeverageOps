@@ -9,7 +9,6 @@ import AIFeaturePage from './pages/AIFeaturePage';
 import AIHistoryPage from './pages/AIHistoryPage';
 import AlertsPage from './pages/AlertsPage';
 import WebhooksPage from './pages/WebhooksPage';
-import ExtensionsPage from './pages/ExtensionsPage';
 import CustomViewsPage from './pages/CustomViewsPage';
 import FermentationDeviationPlanner from './pages/FermentationDeviationPlanner';
 
@@ -74,14 +73,6 @@ function App() {
           element={
             <PrivateRoute>
               <WebhooksPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/extensions"
-          element={
-            <PrivateRoute>
-              <ExtensionsPage />
             </PrivateRoute>
           }
         />
