@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(200) UNIQUE NOT NULL,
+  password VARCHAR(200) NOT NULL,
+  role VARCHAR(50) DEFAULT 'operator',
+  tenant_id VARCHAR(100),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);

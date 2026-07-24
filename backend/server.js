@@ -66,7 +66,8 @@ const loginLimiter = rateLimit({
 app.use('/api', generalLimiter);
 
 // Routes
-app.use('/api/auth', loginLimiter, require('./routes/auth'));
+app.use('/api/auth/login', loginLimiter);
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/brew-logs', auth, require('./routes/brewLogs'));
 app.use('/api/tanks', auth, require('./routes/tanks'));
 app.use('/api/raw-materials', auth, require('./routes/rawMaterials'));

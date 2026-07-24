@@ -19,9 +19,11 @@ async function ensureUsersTable() {
       email VARCHAR(200) UNIQUE NOT NULL,
       password VARCHAR(200) NOT NULL,
       role VARCHAR(50) DEFAULT 'staff',
+      tenant_id VARCHAR(100),
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+  await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(100)');
 }
 
 // POST /api/auth/register
@@ -101,5 +103,9 @@ router.post(
     }
   }
 );
+
+router.get('/me', require('../middleware/auth'), (req, res) => {
+  res.json({ user: req.user });
+});
 
 module.exports = router;
