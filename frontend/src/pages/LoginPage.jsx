@@ -32,8 +32,8 @@ function LoginPage() {
   };
 
   const handleQuickLogin = () => {
-    setEmail('admin@brewery.com');
-    setPassword('brewery123');
+    setEmail(import.meta.env.VITE_DEMO_EMAIL || '');
+    setPassword(import.meta.env.VITE_DEMO_PASSWORD || '');
     setTimeout(() => {
       const form = document.getElementById('login-form');
       if (form) form.requestSubmit();

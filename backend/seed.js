@@ -3,6 +3,12 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
+function requireDemoPassword() {
+  const password = process.env.DEMO_PASSWORD || process.env.SEED_DEMO_PASSWORD || process.env.DEMO_SEED_PASSWORD || '';
+  if (password.length < 12 || password.length > 1024) throw new Error('DEMO_PASSWORD must contain 12-1024 characters');
+  return password;
+}
+
 async function seed() {
   const client = await pool.connect();
   try {
@@ -319,7 +325,7 @@ async function seed() {
     // =========== SEED DATA ===========
 
     // Users
-    const hashedPassword = await bcrypt.hash('brewery123', 10);
+    const hashedPassword = await bcrypt.hash(requireDemoPassword(), 10);
     await client.query(`
       INSERT INTO users (name, email, password) VALUES
       ('Admin User', 'admin@brewery.com', '${hashedPassword}'),
