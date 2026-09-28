@@ -65,7 +65,7 @@ if [ "${MIGRATE_ON_START:-false}" = true ]; then
   (cd backend && node scripts/provision-admin.js)
 fi
 (cd backend && npm start) & backend_pid=$!
-(cd frontend && npm run dev -- --port "$frontend_port") & frontend_pid=$!
+(cd frontend && npm run dev -- --host 127.0.0.1 --port "$frontend_port" --strictPort) & frontend_pid=$!
 cleanup(){ kill "$backend_pid" "$frontend_pid" 2>/dev/null || true; }
 trap cleanup EXIT INT TERM
 wait "$backend_pid" "$frontend_pid"

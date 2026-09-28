@@ -34,10 +34,6 @@ function LoginPage() {
   const handleQuickLogin = () => {
     setEmail(import.meta.env.VITE_DEMO_EMAIL || '');
     setPassword(import.meta.env.VITE_DEMO_PASSWORD || '');
-    setTimeout(() => {
-      const form = document.getElementById('login-form');
-      if (form) form.requestSubmit();
-    }, 100);
   };
 
   return (
@@ -76,7 +72,7 @@ function LoginPage() {
         <div className="login-divider">or</div>
 
         <button className="btn-quick-login" onClick={handleQuickLogin}>
-          &#9889; Quick Login (Demo Account)
+          Auto Fill Demo Credentials
         </button>
       </div>
     </div>
