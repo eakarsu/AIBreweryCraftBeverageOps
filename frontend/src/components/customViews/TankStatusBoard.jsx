@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchTankStatusBoard } from '../../services/api';
+import { asRows, fetchTankStatusBoard } from '../../services/api';
 
 const STATUS_COLORS = {
   'in-use': '#1e90ff',
@@ -45,7 +45,7 @@ export default function TankStatusBoard() {
   if (!data) return <div style={{ padding: 20 }}>No tanks.</div>;
 
   const s = data.summary || {};
-  const tanks = data.tanks || [];
+  const tanks = asRows(data, 'tanks');
 
   // Build a grid: rows = tank type, columns = tank (sorted by name)
   const byType = {};

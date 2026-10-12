@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { login } from '../services/api';
+import { login, loginDemo } from '../services/api';
 
 function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const saveSession = (data) => {
+    localStorage.setItem('token', data.token);
+    if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,22 +23,28 @@ function LoginPage() {
     setLoading(true);
     try {
       const res = await login(email, password);
-      localStorage.setItem('token', res.data.token);
-      if (res.data.user) {
-        localStorage.setItem('user', JSON.stringify(res.data.user));
-      }
+      saveSession(res.data);
       toast.success('Welcome to BrewOps AI!');
       navigate('/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      toast.error(err.response?.data?.error || err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleQuickLogin = () => {
-    setEmail(import.meta.env.VITE_DEMO_EMAIL || '');
-    setPassword(import.meta.env.VITE_DEMO_PASSWORD || '');
+  const handleQuickLogin = async () => {
+    setLoading(true);
+    try {
+      const res = await loginDemo();
+      saveSession(res.data);
+      toast.success('Demo session ready!');
+      navigate('/dashboard');
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Demo login is unavailable.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -71,8 +82,8 @@ function LoginPage() {
 
         <div className="login-divider">or</div>
 
-        <button className="btn-quick-login" onClick={handleQuickLogin}>
-          Auto Fill Demo Credentials
+        <button className="btn-quick-login" onClick={handleQuickLogin} disabled={loading}>
+          {loading ? 'Starting demo…' : 'Log In as Demo'}
         </button>
       </div>
     </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaArrowLeft, FaPlus, FaSearch, FaChevronLeft, FaChevronRight, FaFilePdf, FaExchangeAlt } from 'react-icons/fa';
-import { getAll, create, update, remove, updateBatchStatus, downloadBrewSheet } from '../services/api';
+import { asRows, getAll, create, update, remove, updateBatchStatus, downloadBrewSheet } from '../services/api';
 import Modal from '../components/Modal';
 import DetailPanel from '../components/DetailPanel';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -273,7 +273,7 @@ const featureConfigs = {
     fields: [
       { name: 'batch_number', label: 'Batch Number', type: 'text' },
       { name: 'recipe_name', label: 'Recipe Name', type: 'text' },
-      { name: 'style', label: 'Style', type: 'select', options: ['IPA', 'Double IPA', 'Session IPA', 'West Coast IPA', 'New England IPA', 'Pale Ale', 'American Pale Ale', 'Stout', 'Imperial Stout', 'Oatmeal Stout', 'Porter', 'Lager', 'Pilsner', 'Wheat Beer', 'Hefeweizen', 'Witbier', 'Sour', 'Berliner Weisse', 'Gose', 'Saison', 'Belgian Strong', 'Dubbel', 'Tripel', 'Barleywine', 'Amber Ale', 'Brown Ale', 'Red Ale', 'Kolsch', 'Cream Ale', 'Other'] },
+      { name: 'style', label: 'Style', type: 'select', options: ['IPA', 'Double IPA', 'Session IPA', 'West Coast IPA', 'New England IPA', 'Pale Ale', 'American Pale Ale', 'Stout', 'Imperial Stout', 'Oatmeal Stout', 'Porter', 'Lager', 'Pilsner', 'Wheat Beer', 'Hefeweizen', 'Witbier', 'Radler', 'Sour', 'Berliner Weisse', 'Gose', 'Saison', 'Belgian Strong', 'Dubbel', 'Tripel', 'Barleywine', 'Amber Ale', 'Brown Ale', 'Red Ale', 'Kolsch', 'Cream Ale', 'Other'] },
       { name: 'abv', label: 'ABV (%)', type: 'number', step: '0.1' },
       { name: 'og', label: 'Original Gravity', type: 'number', step: '0.001' },
       { name: 'fg', label: 'Final Gravity', type: 'number', step: '0.001' },
@@ -322,16 +322,8 @@ function FeaturePage() {
     try {
       const res = await getAll(featureName, { page, limit: PAGE_SIZE });
       const payload = res.data;
-      if (payload && payload.data && payload.pagination) {
-        setData(payload.data);
-        setPagination(payload.pagination);
-      } else if (Array.isArray(payload)) {
-        setData(payload);
-        setPagination(null);
-      } else {
-        setData(payload?.data || []);
-        setPagination(payload?.pagination || null);
-      }
+      setData(asRows(payload));
+      setPagination(payload?.pagination || null);
     } catch (err) {
       toast.error('Failed to load data');
       setData([]);

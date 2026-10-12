@@ -90,9 +90,14 @@ app.use('/api/alerts', auth, require('./routes/alerts'));
 app.use('/api/webhooks', auth, require('./routes/webhooks'));
 // Apply pass 5 extensions (notifications, reports, webhook delivery, agents, RAG, white-label)
 // Provider/demo extension routes remain quarantined until backed by real delivery adapters.
+app.use('/api/ext', auth, require('./routes/extensions'));
 // Custom Brewery Views (4 synthesized endpoints)
 app.use('/api/custom-views', auth, require('./routes/customViews'));
 app.use('/api/production-plans', auth, require('./routes/productionPlans'));
+app.use('/api/brew-day-agent', auth, require('./routes/brewDayAgent'));
+app.use('/api/bjcp-rag', auth, require('./routes/bjcpRag'));
+app.use('/api/fermentation-stream', auth, require('./routes/fermentationStream'));
+app.use('/api/contract-tenant', auth, require('./routes/contractBreweryTenant'));
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -100,6 +105,14 @@ app.get('/api/health', (req, res) => {
 });
 
 // Error handling middleware
+
+// Advisory AI reports only; native execution and approval routes stay unchanged.
+const aiWorkspaceSupport = require("./aiWorkspaceAdapters.cjs");
+const aiWorkspaceDatabase = require("./db.js");
+app.use('/api/report-workspace', require("./aiWorkspace.cjs").createAIWorkspaceRouter({
+  pool: aiWorkspaceDatabase, authenticateToken: require("./middleware/auth.js"),
+  aiRateLimiter: aiWorkspaceSupport.createWorkspaceLimiter(), features: require("./aiWorkspaceFeatures.json"),
+}));
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.status(err.status || 500).json({
@@ -114,13 +127,6 @@ app.use((req, res) => {
 });
 
 
-app.use('/api/brew-day-agent', require('./routes/brewDayAgent')); // apply pass 6 — audit custom suggestion
-
-app.use('/api/bjcp-rag', require('./routes/bjcpRag')); // apply pass 6 — audit custom suggestion
-
-app.use('/api/fermentation-stream', require('./routes/fermentationStream')); // apply pass 6 — audit custom suggestion
-
-app.use('/api/contract-tenant', require('./routes/contractBreweryTenant')); // apply pass 6 — audit custom suggestion
 app.listen(PORT, () => {
   console.log(`Brewery Ops server running on port ${PORT}`);
 });

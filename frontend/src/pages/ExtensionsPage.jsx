@@ -1,3 +1,4 @@
+import FormattedAIReport from "../components/FormattedAIReport";
 // Apply pass 5: Extensions page surfacing notifications, reports, RAG, tenants, agents.
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +15,7 @@ import {
   runAgent,
   fetchAgentRuns,
   dispatchWebhook,
+  asRows,
 } from '../services/api';
 
 function Section({ title, children }) {
@@ -44,8 +46,8 @@ export default function ExtensionsPage() {
         fetchAgentRuns().catch(() => ({ data: [] })),
       ]);
       setNotifStatus(s.data);
-      setTenants(t.data || []);
-      setAgentRuns(a.data || []);
+      setTenants(asRows(t.data));
+      setAgentRuns(asRows(a.data));
     } catch (e) { console.warn(e); }
   };
 
@@ -70,7 +72,7 @@ export default function ExtensionsPage() {
       await runAgent(agentObj, {}, 'linear-planner');
       toast.success('Agent run queued');
       const a = await fetchAgentRuns();
-      setAgentRuns(a.data || []);
+      setAgentRuns(asRows(a.data));
     } catch (e) { toast.error(e.message); }
   };
 
@@ -91,7 +93,7 @@ export default function ExtensionsPage() {
     try {
       await upsertTenant({ tenant_slug: slug, brand_name: name });
       const t = await fetchTenants();
-      setTenants(t.data || []);
+      setTenants(asRows(t.data));
     } catch (e) { toast.error(e.message); }
   };
 
@@ -121,6 +123,11 @@ export default function ExtensionsPage() {
       </Section>
 
       <Section title="RAG">
+        <div className="ai-actions" aria-label="Example brewery questions">{[
+          'Which BJCP characteristics distinguish an American Pale Ale from an American IPA?',
+          'What evidence should a brewer review when a pale ale finishes above target gravity?',
+          'How should competition feedback inform the next stout pilot batch?',
+        ].map((question, index) => <button key={question} type="button" onClick={() => setRagQuery(question)}>Fill question {index + 1}</button>)}</div>
         <input value={ragQuery} onChange={e => setRagQuery(e.target.value)} placeholder="Ask brewery question"
                style={{ padding: 6, marginRight: 8, width: 300 }} />
         <button onClick={onRag}>Query</button>
@@ -130,13 +137,16 @@ export default function ExtensionsPage() {
           toast.success('Indexed sample doc');
         }} style={{ marginLeft: 8 }}>Index sample doc</button>
         {ragResult && (
-          <pre style={{ background: '#0f0f0f', padding: 8, marginTop: 8, maxHeight: 240, overflow: 'auto' }}>
-            {JSON.stringify(ragResult, null, 2)}
-          </pre>
+          <FormattedAIReport response={ragResult} />
         )}
       </Section>
 
       <Section title="Multi-agent run">
+        <div className="ai-actions" aria-label="Example planning objectives">{[
+          'Draft a brew day checklist for a 10 BBL American Pale Ale and flag missing source data.',
+          'Plan a review of fermentation temperature drift, gravity readings, and quality holds.',
+          'Prepare a taproom release plan covering inventory, staffing, and follow-up owners.',
+        ].map((objective, index) => <button key={objective} type="button" onClick={() => setAgentObj(objective)}>Fill objective {index + 1}</button>)}</div>
         <input value={agentObj} onChange={e => setAgentObj(e.target.value)} placeholder="Objective"
                style={{ padding: 6, marginRight: 8, width: 300 }} />
         <button onClick={onAgent}>Plan</button>

@@ -527,7 +527,7 @@ tbody tr:nth-child(even):hover {
 
 .modal-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--border-primary);
@@ -592,6 +592,7 @@ tbody tr:nth-child(even):hover {
 
 .detail-actions {
   display: flex;
+  justify-content: center;
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 1rem;

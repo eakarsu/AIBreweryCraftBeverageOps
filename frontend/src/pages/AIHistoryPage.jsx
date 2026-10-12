@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaArrowLeft, FaHistory, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { fetchAIResults } from '../services/api';
+import { asRows, fetchAIResults } from '../services/api';
+import FormattedAIReport, { reportText, reportValue, readableLabel } from '../components/FormattedAIReport';
 
 const FEATURE_LABELS = {
   'recipe-suggestion': 'Recipe Suggestion',
@@ -43,8 +44,8 @@ function AIHistoryPage() {
       const params = { page, limit: 20 };
       if (featureFilter) params.feature = featureFilter;
       const res = await fetchAIResults(params);
-      setResults(res.data.data || []);
-      setPagination(res.data.pagination || null);
+      setResults(asRows(res.data));
+      setPagination(res.data?.pagination || null);
     } catch (err) {
       toast.error('Failed to load AI history');
       setResults([]);
@@ -53,17 +54,10 @@ function AIHistoryPage() {
     }
   };
 
-  const formatOutput = (output) => {
-    if (!output) return '—';
-    if (typeof output === 'string') return output.slice(0, 200) + (output.length > 200 ? '...' : '');
-    return JSON.stringify(output, null, 2).slice(0, 400) + '...';
-  };
-
   const formatInput = (input) => {
-    if (!input) return '—';
+    if (input === null || input === undefined) return '—';
     return Object.entries(input)
-      .filter(([, v]) => v)
-      .map(([k, v]) => `${k}: ${String(v).slice(0, 60)}`)
+      .map(([k, v]) => `${readableLabel(k)}: ${reportText(v).slice(0, 60)}`)
       .join(' | ') || '—';
   };
 
@@ -146,19 +140,12 @@ function AIHistoryPage() {
                   {r.input && Object.keys(r.input).length > 0 && (
                     <div style={{ marginBottom: '1rem' }}>
                       <h4 style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Input</h4>
-                      <pre style={{ background: 'var(--bg-secondary)', padding: '0.75rem', borderRadius: '6px', fontSize: '0.8rem', overflow: 'auto', maxHeight: '200px' }}>
-                        {JSON.stringify(r.input, null, 2)}
-                      </pre>
+                      <dl className="ai-report-facts">{Object.entries(r.input).map(([key, value]) => <div key={key}><dt>{readableLabel(key)}</dt><dd>{reportText(value)}</dd></div>)}</dl>
                     </div>
                   )}
-                  {r.output && (
+                  {r.output !== null && r.output !== undefined && (
                     <div>
-                      <h4 style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                        AI Output {typeof r.output === 'object' ? '(structured)' : ''}
-                      </h4>
-                      <pre style={{ background: 'var(--bg-secondary)', padding: '0.75rem', borderRadius: '6px', fontSize: '0.8rem', overflow: 'auto', maxHeight: '300px', whiteSpace: 'pre-wrap' }}>
-                        {typeof r.output === 'string' ? r.output : JSON.stringify(r.output, null, 2)}
-                      </pre>
+                      <FormattedAIReport response={reportValue(r.output)} title={FEATURE_LABELS[r.feature] || r.feature || 'Saved AI report'} model={r.model} />
                     </div>
                   )}
                 </div>

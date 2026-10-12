@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchRecipeList, fetchRecipe, saveRecipe } from '../../services/api';
+import { asRows, fetchRecipeList, fetchRecipe, saveRecipe } from '../../services/api';
 
 const FIELDS = [
   { key: 'recipe_name', label: 'Recipe name', type: 'text' },
@@ -30,7 +30,7 @@ export default function RecipeEditor() {
   useEffect(() => {
     fetchRecipeList()
       .then(r => {
-        const list = r.data?.recipes || [];
+        const list = asRows(r.data, 'recipes');
         setRecipes(list);
         if (list.length) setSelectedId(String(list[0].id));
       })

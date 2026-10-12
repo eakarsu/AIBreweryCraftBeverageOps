@@ -31,6 +31,7 @@ async function seed() {
       DROP TABLE IF EXISTS raw_materials CASCADE;
       DROP TABLE IF EXISTS tanks CASCADE;
       DROP TABLE IF EXISTS brew_logs CASCADE;
+      DROP TABLE IF EXISTS batches CASCADE;
       DROP TABLE IF EXISTS users CASCADE;
     `);
     console.log('Dropped all tables.');
@@ -67,6 +68,30 @@ async function seed() {
         status VARCHAR(50) DEFAULT 'planning',
         notes TEXT,
         created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    // Create batches table
+    await client.query(`
+      CREATE TABLE batches (
+        id SERIAL PRIMARY KEY,
+        batch_number VARCHAR(50) UNIQUE,
+        recipe_name VARCHAR(100) NOT NULL,
+        style VARCHAR(100),
+        abv NUMERIC(5,2),
+        og NUMERIC(6,4),
+        fg NUMERIC(6,4),
+        ibu INTEGER,
+        batch_size_gallons NUMERIC(8,2),
+        brew_date DATE,
+        brewer VARCHAR(100),
+        yeast_strain VARCHAR(100),
+        fermentation_temp NUMERIC(5,2),
+        status VARCHAR(50) DEFAULT 'planned',
+        ingredients JSONB,
+        notes TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
       );
     `);
 
@@ -351,6 +376,28 @@ async function seed() {
       ('BL-2026-013', 'Double IPA', 'Double IPA', '2026-03-05', 'Emily Torres', '15lb Pale Malt, 1lb Crystal 40, 1lb Munich', 'Simcoe, Amarillo, Centennial', 'US-05', 152, 1.085, 1.014, 9.3, 85, 310, 'planning', 'Big hop bomb'),
       ('BL-2026-014', 'Kolsch Style', 'Kolsch', '2026-03-10', 'Mike Chen', '9lb Pilsner Malt, 1lb Vienna Malt', 'Hallertau, Tettnang', 'Kolsch Yeast', 148, 1.046, 1.008, 4.9, 22, 620, 'planning', 'Clean and crisp'),
       ('BL-2026-015', 'Saison Farmhouse', 'Saison', '2026-03-15', 'Sarah Kim', '10lb Pilsner Malt, 1lb Wheat, 0.5lb Rye', 'Styrian Goldings, Saaz', 'Belle Saison', 148, 1.058, 1.004, 7.0, 25, 310, 'planning', 'Peppery and dry finish');
+    `);
+
+    // Batch Manager records mirror the 15 seeded brew logs without changing source data.
+    await client.query(`
+      INSERT INTO batches (
+        batch_number, recipe_name, style, abv, og, fg, ibu, batch_size_gallons,
+        brew_date, brewer, yeast_strain, fermentation_temp, status, notes
+      )
+      SELECT
+        batch_id, recipe_name, style, abv, og, fg, ibu, volume_gallons,
+        brew_date, brewer, yeast, NULL,
+        CASE status
+          WHEN 'fermenting' THEN 'fermenting'
+          WHEN 'conditioning' THEN 'conditioning'
+          WHEN 'planning' THEN 'planned'
+          WHEN 'completed' THEN 'sold'
+          ELSE 'planned'
+        END,
+        notes
+      FROM brew_logs
+      ORDER BY id
+      LIMIT 15;
     `);
 
     // Tanks

@@ -1,5 +1,13 @@
 import axios from 'axios';
 
+// List endpoints return either a bare array or a named/paginated collection.
+// Never pass an error object through to a component that calls .map or .filter.
+export const asRows = (payload, key = 'data') => {
+  if (Array.isArray(payload)) return payload;
+  const rows = payload?.[key];
+  return Array.isArray(rows) ? rows : [];
+};
+
 const api = axios.create({
   baseURL: '/api',
 });
@@ -26,6 +34,7 @@ api.interceptors.response.use(
 // Auth
 export const login = (email, password) =>
   api.post('/auth/login', { email, password });
+export const loginDemo = () => api.post('/auth/demo');
 
 // Generic CRUD for all features
 const featureEndpoints = {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaArrowLeft, FaExclamationTriangle, FaExclamationCircle, FaSync } from 'react-icons/fa';
-import { fetchAlerts } from '../services/api';
+import { asRows, fetchAlerts } from '../services/api';
 
 const TYPE_LABELS = {
   low_stock: 'Low Stock',
@@ -33,7 +33,7 @@ function AlertsPage() {
     setLoading(true);
     try {
       const res = await fetchAlerts();
-      setAlerts(res.data?.data || []);
+      setAlerts(asRows(res.data));
       setSummary(res.data?.summary || { total: 0, critical: 0, warning: 0 });
     } catch (err) {
       toast.error('Failed to load alerts');

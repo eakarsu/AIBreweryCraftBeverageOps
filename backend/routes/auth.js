@@ -23,7 +23,24 @@ async function ensureUsersTable() {
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+  await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT \'staff\'');
   await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(100)');
+}
+
+function sessionPayload(user) {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role || 'staff',
+    tenantId: user.tenant_id,
+  };
+}
+
+function issueSession(user) {
+  const sessionUser = sessionPayload(user);
+  const token = jwt.sign(sessionUser, getJwtSecret(), { expiresIn: '24h' });
+  return { success: true, token, user: sessionUser };
 }
 
 // POST /api/auth/register
@@ -52,8 +69,7 @@ router.post(
       const user = result.rows[0];
       user.tenant_id = `user:${user.id}`;
       await pool.query('UPDATE users SET tenant_id=$1 WHERE id=$2', [user.tenant_id, user.id]);
-      const token = jwt.sign({ id: user.id, email: user.email, name: user.name, role: user.role, tenantId: user.tenant_id }, getJwtSecret(), { expiresIn: '24h' });
-      res.status(201).json({ success: true, token, user });
+      res.status(201).json(issueSession(user));
     } catch (err) {
       console.error('Register error:', err);
       res.status(500).json({ error: 'Server error' });
@@ -86,23 +102,34 @@ router.post(
         return res.status(401).json({ error: 'Invalid credentials' });
       }
 
-      const token = jwt.sign(
-        { id: user.id, email: user.email, name: user.name, role: user.role, tenantId: user.tenant_id },
-        getJwtSecret(),
-        { expiresIn: '24h' }
-      );
-
-      res.json({
-        success: true,
-        token,
-        user: { id: user.id, email: user.email, name: user.name, role: user.role, tenantId: user.tenant_id },
-      });
+      res.json(issueSession(user));
     } catch (err) {
       console.error('Login error:', err);
       res.status(500).json({ error: 'Server error' });
     }
   }
 );
+
+// POST /api/auth/demo
+// Development demo sessions avoid shipping a reusable password in the browser bundle.
+// Production must opt in explicitly.
+router.post('/demo', async (_req, res) => {
+  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_DEMO_LOGIN !== 'true') {
+    return res.status(404).json({ error: 'Demo login is not enabled.' });
+  }
+  try {
+    await ensureUsersTable();
+    const email = process.env.DEMO_EMAIL || process.env.SEED_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'admin@brewery.com';
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (!result.rows.length) {
+      return res.status(404).json({ error: 'Demo account is unavailable. Seed the database and try again.' });
+    }
+    res.json(issueSession(result.rows[0]));
+  } catch (err) {
+    console.error('Demo login error:', err);
+    res.status(500).json({ error: 'Demo login is temporarily unavailable.' });
+  }
+});
 
 router.get('/me', require('../middleware/auth'), (req, res) => {
   res.json({ user: req.user });

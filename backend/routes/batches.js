@@ -20,7 +20,7 @@ const VALID_STYLES = [
   'Stout', 'Imperial Stout', 'Oatmeal Stout', 'Milk Stout', 'Dry Irish Stout',
   'Porter', 'Baltic Porter', 'Robust Porter',
   'Lager', 'Pilsner', 'Czech Pilsner', 'German Pilsner', 'American Lager',
-  'Wheat Beer', 'Hefeweizen', 'American Wheat', 'Witbier',
+  'Wheat Beer', 'Hefeweizen', 'American Wheat', 'Witbier', 'Radler',
   'Sour', 'Berliner Weisse', 'Gose', 'Lambic', 'Flanders Red', 'Kettle Sour',
   'Saison', 'Belgian Strong', 'Dubbel', 'Tripel', 'Quad',
   'Barleywine', 'Amber Ale', 'Brown Ale', 'Red Ale', 'Kolsch', 'Cream Ale',

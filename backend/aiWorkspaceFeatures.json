@@ -1,0 +1,93 @@
+[
+  {
+    "name": "AgenticBrewDayAssistantOrchestratingRecipeWaPage",
+    "id": "cf-agentic-brew-day-assistant-orchestrating-recipe-wa",
+    "title": "Agentic brew-day assistant orchestrating recipe, water chem, yeast, and CIP scheduling",
+    "description": "Prepare a professional advisory report for agentic brew-day assistant orchestrating recipe, water chem, yeast, and cip scheduling using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoAiCustomerFeedbackSentimentLoopIntoRecipePage",
+    "id": "gap-no-ai-customer-feedback-sentiment-loop-into-recipe",
+    "title": "No AI customer-feedback sentiment loop into recipes",
+    "description": "Prepare a professional advisory report for no ai customer-feedback sentiment loop into recipes using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoAiTapRoomDemandForecastingPerHourPage",
+    "id": "gap-no-ai-tap-room-demand-forecasting-per-hour",
+    "title": "No AI tap-room demand forecasting per hour",
+    "description": "Prepare a professional advisory report for no ai tap-room demand forecasting per hour using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoAiTastingNoteGeneratorForMarketingPage",
+    "id": "gap-no-ai-tasting-note-generator-for-marketing",
+    "title": "No AI tasting-note generator for marketing",
+    "description": "Prepare a professional advisory report for no ai tasting-note generator for marketing using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoDirectPosVendorApiClientBeyondStoredTranPage",
+    "id": "gap-no-direct-pos-vendor-api-client-beyond-stored-tran",
+    "title": "No direct POS-vendor API client beyond stored transactions",
+    "description": "Prepare a professional advisory report for no direct pos-vendor api client beyond stored transactions using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoExportReportingModuleForTtbStateCompliancPage",
+    "id": "gap-no-export-reporting-module-for-ttb-state-complianc",
+    "title": "No export/reporting module for TTB/state compliance",
+    "description": "Prepare a professional advisory report for no export/reporting module for ttb/state compliance using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoIotSensorStreamIngestionLayerForFermenterPage",
+    "id": "gap-no-iot-sensor-stream-ingestion-layer-for-fermenter",
+    "title": "No IoT sensor stream ingestion layer for fermenters",
+    "description": "Prepare a professional advisory report for no iot sensor stream ingestion layer for fermenters using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoNotificationSystemAlertsModuleIsStorageOnPage",
+    "id": "gap-no-notification-system-alerts-module-is-storage-on",
+    "title": "No notification system (alerts module is storage-only, no SMS/email delivery)",
+    "description": "Prepare a professional advisory report for no notification system (alerts module is storage-only, no sms/email delivery) using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoVisionBasedFermentationClarityMonitoringPage",
+    "id": "gap-no-vision-based-fermentation-clarity-monitoring",
+    "title": "No vision-based fermentation/clarity monitoring",
+    "description": "Prepare a professional advisory report for no vision-based fermentation/clarity monitoring using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "Only8FrontendPagesDespite21BackendRoutesUiPage",
+    "id": "gap-only-8-frontend-pages-despite-21-backend-routes-ui",
+    "title": "Only 8 frontend pages despite 21 backend routes — UI gap",
+    "description": "Prepare a professional advisory report for only 8 frontend pages despite 21 backend routes — ui gap using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "RagOverBjcpGuidelinesInHouseBrewLogsAndCoPage",
+    "id": "cf-rag-over-bjcp-guidelines-in-house-brew-logs-and-co",
+    "title": "RAG over BJCP guidelines, in-house brew logs, and competition feedback",
+    "description": "Prepare a professional advisory report for rag over bjcp guidelines, in-house brew logs, and competition feedback using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "RealTimeFermentationStreamingFromIotSensorsPage",
+    "id": "cf-real-time-fermentation-streaming-from-iot-sensors-",
+    "title": "Real-time fermentation streaming from IoT sensors with anomaly alerts",
+    "description": "Prepare a professional advisory report for real-time fermentation streaming from iot sensors with anomaly alerts using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "WhiteLabelPlatformForContractBrewersManagingPage",
+    "id": "cf-white-label-platform-for-contract-brewers-managing",
+    "title": "White-label platform for contract brewers managing multi-client brewhouses",
+    "description": "Prepare a professional advisory report for white-label platform for contract brewers managing multi-client brewhouses using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  }
+]

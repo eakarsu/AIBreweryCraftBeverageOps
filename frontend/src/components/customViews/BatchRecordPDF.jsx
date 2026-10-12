@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchRecipeList, batchRecordPdfUrl } from '../../services/api';
+import { asRows, fetchRecipeList, batchRecordPdfUrl } from '../../services/api';
 
 export default function BatchRecordPDF() {
   const [recipes, setRecipes] = useState([]);
@@ -13,7 +13,7 @@ export default function BatchRecordPDF() {
     fetchRecipeList()
       .then(r => {
         if (cancel) return;
-        const list = r.data?.recipes || [];
+        const list = asRows(r.data, 'recipes');
         setRecipes(list);
         if (list.length) setSelected(String(list[0].id));
       })

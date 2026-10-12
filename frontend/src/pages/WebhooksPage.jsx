@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaArrowLeft, FaBell, FaPaperPlane, FaTrash, FaPlus } from 'react-icons/fa';
-import { fetchWebhooks, createWebhook, deleteWebhook, testWebhook } from '../services/api';
+import { asRows, fetchWebhooks, createWebhook, deleteWebhook, testWebhook } from '../services/api';
 
 const ALLOWED_EVENTS = [
   'batch.created',
@@ -31,7 +31,7 @@ function WebhooksPage() {
     setLoading(true);
     try {
       const r = await fetchWebhooks();
-      setItems(Array.isArray(r.data) ? r.data : (r.data?.data || []));
+      setItems(asRows(r.data));
     } catch (err) {
       toast.error('Failed to load webhooks');
     }

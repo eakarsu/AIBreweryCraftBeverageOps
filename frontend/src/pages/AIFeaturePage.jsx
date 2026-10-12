@@ -1,3 +1,6 @@
+
+import FullAIExamples, { useFullAIExamples } from "../components/FullAIExamples.jsx";
+import FormattedAIReport from "../components/FormattedAIReport";
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -292,6 +295,8 @@ function formatObjectToText(obj, depth = 0) {
 }
 
 function AIFeaturePage() {
+  const fullAIExamples = useFullAIExamples();
+
   const { aiFeature } = useParams();
   const navigate = useNavigate();
   const config = aiConfigs[aiFeature];
@@ -386,7 +391,7 @@ function AIFeaturePage() {
       <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 1fr' : '1fr', gap: '2rem', alignItems: 'start' }}>
         <div className="card" style={{ padding: '2rem' }}>
           <h3 style={{ marginBottom: '1.5rem' }}>Input Parameters</h3>
-          <form onSubmit={handleGenerate}>
+          <form onSubmit={handleGenerate} data-full-ai-workspace="AIFeaturePage"><FullAIExamples controller={fullAIExamples} disabled={Boolean(loading)} />
             {config.fields.map((field) => (
               <div className="form-group" key={field.name}>
                 <label>{field.label}</label>
@@ -394,7 +399,7 @@ function AIFeaturePage() {
                   <select
                     className="form-control"
                     value={formData[field.name] || ''}
-                    onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                    onChange={(e) => handleFieldChange(field.name, e.target.value)} data-full-ai-field={fullAIExamples.bind({ current: formData[field.name] || '', change: (e) => handleFieldChange(field.name, e.target.value), label: "formData[field.name]", manual: false, json: false }, "p1-18087", [(typeof field === 'object' ? field?.key ?? field?.name ?? field?.id ?? '' : field),field.name].join(":"))}
                   >
                     <option value="">Select...</option>
                     {field.options.map((opt) => (
@@ -407,7 +412,7 @@ function AIFeaturePage() {
                     value={formData[field.name] || ''}
                     onChange={(e) => handleFieldChange(field.name, e.target.value)}
                     placeholder={field.placeholder || ''}
-                    rows={4}
+                    rows={4} data-full-ai-field={fullAIExamples.bind({ current: formData[field.name] || '', change: (e) => handleFieldChange(field.name, e.target.value), label: "formData[field.name]", manual: false, json: false }, "p1-18592", [(typeof field === 'object' ? field?.key ?? field?.name ?? field?.id ?? '' : field),field.name].join(":"))}
                   />
                 ) : (
                   <input
@@ -416,7 +421,7 @@ function AIFeaturePage() {
                     value={formData[field.name] || ''}
                     onChange={(e) => handleFieldChange(field.name, e.target.value)}
                     placeholder={field.placeholder || ''}
-                    step={field.step}
+                    step={field.step} data-full-ai-field={fullAIExamples.bind({ current: formData[field.name] || '', change: (e) => handleFieldChange(field.name, e.target.value), label: "formData[field.name]", manual: false, json: false }, "p1-18934", [(typeof field === 'object' ? field?.key ?? field?.name ?? field?.id ?? '' : field),field.name].join(":"))}
                   />
                 )}
               </div>
@@ -458,22 +463,7 @@ function AIFeaturePage() {
                   <span>AI Generated</span>
                 </div>
 
-                {/* Structured JSON output panel */}
-                {structuredResult && (
-                  <details style={{ marginBottom: '1rem', background: 'var(--bg-secondary)', borderRadius: '8px', padding: '0.75rem' }}>
-                    <summary style={{ cursor: 'pointer', fontWeight: '600', color: 'var(--accent-gold)', fontSize: '0.875rem' }}>
-                      Structured Data (JSON)
-                    </summary>
-                    <pre style={{ marginTop: '0.75rem', fontSize: '0.78rem', overflow: 'auto', maxHeight: '400px', whiteSpace: 'pre-wrap', color: 'var(--text-secondary)' }}>
-                      {JSON.stringify(structuredResult, null, 2)}
-                    </pre>
-                  </details>
-                )}
-
-                <div
-                  className="ai-output-content"
-                  dangerouslySetInnerHTML={{ __html: result }}
-                />
+                <FormattedAIReport response={structuredResult || rawResult} title={config.title} />
                 <div className="ai-output-actions">
                   <button className="btn btn-secondary btn-sm" onClick={handleCopy}>
                     <FaCopy /> Copy to Clipboard

@@ -1,3 +1,4 @@
+import AIReportLibrary from "./components/AIReportLibrary";
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -22,7 +23,7 @@ function PrivateRoute({ children }) {
 
 function App() {
   return (
-    <>
+    <><AIReportLibrary floating /><>
       <Routes>
         <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
         <Route path="/codex/operations" element={<CodexOperationsFeature />} />
@@ -105,7 +106,7 @@ function App() {
         pauseOnHover
         theme="dark"
       />
-    </>
+    </></>
   );
 }
 
