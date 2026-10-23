@@ -8,6 +8,7 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [demoError, setDemoError] = useState('');
 
   const saveSession = (data) => {
     localStorage.setItem('token', data.token);
@@ -82,6 +83,18 @@ function LoginPage() {
 
         <div className="login-divider">or</div>
 
+        {demoError && <div role="alert" style={{ color: '#b91c1c', marginBottom: '12px' }}>{demoError}</div>}
+        <button type="button" aria-label="Fill demo credentials" className="btn-quick-login" onClick={async () => {
+            if (import.meta.env.VITE_DEMO_EMAIL && import.meta.env.VITE_DEMO_PASSWORD) { setEmail(import.meta.env.VITE_DEMO_EMAIL); setPassword(import.meta.env.VITE_DEMO_PASSWORD); setDemoError(''); return; }
+            try {
+              const res = await fetch('/api/auth/demo-credentials', { cache: 'no-store' });
+              const data = await res.json().catch(() => ({}));
+              if (data.email && data.password) { setEmail(data.email); setPassword(data.password); setDemoError(''); return; }
+            } catch {}
+            setDemoError('Demo credentials are not configured for this environment.');
+          }} disabled={loading}>
+            Fill demo credentials
+          </button>
         <button className="btn-quick-login" onClick={handleQuickLogin} disabled={loading}>
           {loading ? 'Starting demo…' : 'Log In as Demo'}
         </button>
